@@ -84,12 +84,12 @@ const newExercise= new Exercise({
     Date:conv_date
   });
   newExercise.save();
-  Exercise.findById({Id:newExercise.Id}).populate('Id','Username').exec((err, data)=>{
+  Exercise.findById(newExercise.Id).populate('Id','Username').exec((err, data)=>{
     if (err){
-      return done(err);
+      return res.json({error: "could not save exercise"});
     }
     else{
-      return res.json({"id":newExercise.Id,"username":newExercise.Id.Username, "date": newExercise.date,"duration": newExercise.dur, "description": newExercise.desc});
+      return res.json({"id":newExercise.Id._id,"username":newExercise.Id.Username, "date": newExercise.date,"duration": newExercise.dur, "description": newExercise.desc});
     }
   });
 });
