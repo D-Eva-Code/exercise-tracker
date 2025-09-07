@@ -36,7 +36,7 @@ app.post('/api/users', async (req, res)=>{
       return done(err);
     }
     else{
-      return res.json({"username": user_name, "id":data._id});
+      return res.json({"username": user_name, "id":newUser._id});
       
     }
   });
@@ -70,31 +70,58 @@ const ExerciseSchema= new mongoose.Schema({
 Exercise= mongoose.model('Exercise', ExerciseSchema, "Exercisecollection");
 
 app.post("/api/users/:_id/exercises", (req,res)=>{
-  let id= req.body._id;
+  let id= mongoose.Types.ObjectId( req.params._id);
   let desc= req.body.description;
   let dur= req.body.duration;
   let date= req.body.date;
 
   
   let conv_date= new Date(date).toDateString();
-const newExercise= new Exercise({
-    Id:id,
-    Description:desc,
-    Duration:dur,
-    Date:conv_date
+// const newExercise= new Exercise({
+//     Id:id,
+//     Description:desc,
+//     Duration:dur,
+//     Date:conv_date
+//   });
+//   let savedExercise;
+//    newExercise.save((err, savedExercise) => {
+//     if (err || !savedExercise) {
+//       return res.json({ error: "could not save exercise" });
+//     }
+//   });
+//   Exercise.findById(savedExercise._id).populate('Id','Username').exec((err, data)=>{
+//     if (err){
+//       return res.json({error: "could not find exercise"});
+//     }
+//     else{
+//       return res.json({"id":data.Id._id,"username":data.Id.Username, "date": data.Date,"duration": data.Duration, "description": data.Description});
+//     }
+//   });
+// });
+
+User.findById(id, (err, user) => {
+  if (err || !user) {
+    return res.json({ error: "user not found" });
+  }
+
+  const newExercise = new Exercise({
+    Id: user._id,
+    Description: desc,
+    Duration: dur,
+    Date: conv_date
   });
-  newExercise.save();
-  Exercise.findById(newExercise.Id).populate('Id','Username').exec((err, data)=>{
-    if (err){
-      return res.json({error: "could not save exercise"});
+  let savedExercise;
+  newExercise.save((err, savedExercise) => {
+    if (err || !savedExercise) {
+      return res.json({ error: "could not save exercise" });
     }
-    else{
-      return res.json({"id":newExercise.Id._id,"username":newExercise.Id.Username, "date": newExercise.date,"duration": newExercise.dur, "description": newExercise.desc});
-    }
+
+    res.json({
+      id: user._id, username: user.Username, description: savedExercise.Description, duration: savedExercise.Duration, date: savedExercise.Date
+    });
   });
 });
-
-
+});
 
 
 
