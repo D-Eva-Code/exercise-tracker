@@ -76,7 +76,7 @@ app.post("/api/users/:_id/exercises", (req,res)=>{
   let date= req.body.date;
 
   
-  let conv_date= new Date(date).toDateString();
+
 // const newExercise= new Exercise({
 //     Id:id,
 //     Description:desc,
@@ -98,7 +98,7 @@ app.post("/api/users/:_id/exercises", (req,res)=>{
 //     }
 //   });
 // });
-
+ 
 User.findById(id, (err, user) => {
   if (err || !user) {
     return res.json({ error: "user not found" });
@@ -108,16 +108,16 @@ User.findById(id, (err, user) => {
     Id: user._id,
     Description: desc,
     Duration: dur,
-    Date: conv_date
+    Date: date? new Date(date) : new Date()
   });
-  let savedExercise;
+ 
   newExercise.save((err, savedExercise) => {
     if (err || !savedExercise) {
       return res.json({ error: "could not save exercise" });
     }
 
     res.json({
-      id: user._id, username: user.Username, description: savedExercise.Description, duration: savedExercise.Duration, date: savedExercise.Date
+      id: user._id, username: user.Username, description: savedExercise.Description, duration: savedExercise.Duration, date: savedExercise.Date.toDateString()
     });
   });
 });
